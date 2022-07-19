@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'NFTs',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      initialRoute: "/Home",
+      initialRoute: "/starter",
       routes: {
         "/Home": (context) => const HomePage(),
         "/starter": (context) => const HomeScreen(),
