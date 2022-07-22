@@ -7,6 +7,8 @@ import 'package:nft_museum/utils/default_loading.dart';
 import 'package:nft_museum/widgets/render_collection_items.dart';
 import 'package:readmore/readmore.dart';
 
+int renderUpto = 8; // default render items
+
 class ShowCollection extends StatefulWidget {
   final String address;
   const ShowCollection({Key? key, required this.address}) : super(key: key);
@@ -33,7 +35,9 @@ class _ShowCollectionState extends State<ShowCollection> {
                     return Center(child: defaultError());
                   } else {
                     return SingleChildScrollView(
-                      child: collectionBody(collectionData: snapshot.data),
+                      child: collectionBody(
+                          collectionData: snapshot.data,
+                          address: widget.address),
                     );
                   }
                 }
@@ -44,7 +48,8 @@ class _ShowCollectionState extends State<ShowCollection> {
     );
   }
 
-  Column collectionBody({required dynamic collectionData}) {
+  Column collectionBody(
+      {required dynamic collectionData, required String address}) {
     String posterImageUrl = collectionData['cover'].startsWith("ipfs://")
         ? collectionData['cover'].replaceAll('ipfs://', 'https://ipfs.io/')
         : collectionData['cover'];
@@ -241,12 +246,46 @@ class _ShowCollectionState extends State<ShowCollection> {
             width: MediaQuery.of(context).size.width,
             child: Text(
               "Items",
-              style: GoogleFonts.inter(fontSize: 30),
+              style: GoogleFonts.inter(fontSize: 24),
               textAlign: TextAlign.center,
             ),
           ),
         ),
-        const RenderCollectionItems(),
+        RenderCollectionItems(
+          address: address,
+          renderUpto: renderUpto,
+        ),
+        const SizedBox(height: 20),
+        renderUpto == 8
+            ? InkWell(
+                onTap: () {
+                  // TODO : TO MAKE A SEPARATE SCREEN FOR IT
+                  setState(() {
+                    renderUpto = 1000;
+                  });
+                },
+                child: Center(
+                  child: Container(
+                    width: 190,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "See all Items",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }

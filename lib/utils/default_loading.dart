@@ -7,7 +7,6 @@ LottieBuilder defaultLoading({double width = 50}) {
   );
 }
 
-
 LottieBuilder defaultError({double width = 50}) {
   return Lottie.asset(
     "assets/json/error.json",

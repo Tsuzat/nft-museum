@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 
@@ -42,36 +40,40 @@ class RaribleAPI {
     for (dynamic d in record) {
       DateTime from = DateTime.parse(d["createdTime"]);
       if (daysBetween(from, now) <= 30) {
-        Map<String, dynamic> field = d['fields'];
-        String title = field['title'] ?? "Unknown";
-        String address;
-        bool islocal;
-        if (field.containsKey('address')) {
-          islocal = true;
-          address = field['address'];
-        } else {
-          islocal = false;
-          address = field['URL'];
+        try {
+          Map<String, dynamic> field = d['fields'];
+          String title = field['title'] ?? "Unknown";
+          String address;
+          bool islocal;
+          if (field.containsKey('address')) {
+            islocal = true;
+            address = field['address'];
+          } else {
+            islocal = false;
+            address = field['URL'];
+          }
+          String type, url;
+          if (field.containsKey("video")) {
+            type = "video";
+            url = field['video'][0]['url'];
+          } else {
+            type = "image";
+            url = field['image'][0]['url'];
+          }
+          Map<String, dynamic> temp = {
+            'title': title,
+            'type': type,
+            'url': url.replaceAll("https://dl.airtable.com/.attachments",
+                "https://img.rarible.com/feat/video/webp/x2"),
+            'thumbnail': url.replaceAll("https://dl.airtable.com/.attachments",
+                "https://img.rarible.com/feat/video/png/x2"),
+            'address': address,
+            'islocal': islocal,
+          };
+          spotlights.add(temp);
+        } catch (e) {
+          continue;
         }
-        String type, url;
-        if (field.containsKey("video")) {
-          type = "video";
-          url = field['video'][0]['url'];
-        } else {
-          type = "image";
-          url = field['image'][0]['url'];
-        }
-        Map<String, dynamic> temp = {
-          'title': title,
-          'type': type,
-          'url': url.replaceAll("https://dl.airtable.com/.attachments",
-              "https://img.rarible.com/feat/video/webp/x2"),
-          'thumbnail': url.replaceAll("https://dl.airtable.com/.attachments",
-              "https://img.rarible.com/feat/video/png/x2"),
-          'address': address,
-          'islocal': islocal,
-        };
-        spotlights.add(temp);
       }
     }
     return spotlights;
@@ -143,10 +145,12 @@ class RaribleAPI {
     }
   }
 
-  Future<List<dynamic>> getItemsID({required List<String> collections}) async {
+  // Give it collections and It will spit out list of items' ID
+  Future<List<dynamic>> getItemsID(
+      {required List<String> collections, required int size}) async {
     addRetry();
     var data = {
-      "size": 8,
+      "size": size,
       "filter": {
         "verifiedOnly": false,
         "sort": "LOW_PRICE_FIRST",
@@ -166,6 +170,7 @@ class RaribleAPI {
     // return 0;
   }
 
+  // Give it list of ids of items and it'll spit out metadata
   Future<List<dynamic>> getItemsByIds({required List<String> ids}) async {
     addRetry();
     String url = "https://rarible.com/marketplace/api/v4/items/byIds";
@@ -177,10 +182,12 @@ class RaribleAPI {
     }
   }
 
-  Future<dynamic> getDataOfItemsOfCollection(String Address) async {
+  // Give it the address of collection and it will return List of meta data of items
+  Future<List<dynamic>> getDataOfItemsOfCollection(
+      String address, int renderUpto) async {
     addRetry();
     try {
-      var items = await getItemsID(collections: [Address]);
+      var items = await getItemsID(collections: [address], size: renderUpto);
       List<String> ids =
           List.from(items).map((e) => e['id'].toString()).toList();
       List<dynamic> data = await getItemsByIds(ids: ids);
