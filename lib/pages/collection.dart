@@ -261,7 +261,7 @@ class _ShowCollectionState extends State<ShowCollection> {
                 onTap: () {
                   // TODO : TO MAKE A SEPARATE SCREEN FOR IT
                   setState(() {
-                    renderUpto = 1000;
+                    renderUpto = 100;
                   });
                 },
                 child: Center(
@@ -274,7 +274,7 @@ class _ShowCollectionState extends State<ShowCollection> {
                     ),
                     child: Center(
                       child: Text(
-                        "See all Items",
+                        "See More Items",
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           color: Colors.black,
