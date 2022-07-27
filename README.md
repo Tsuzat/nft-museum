@@ -22,14 +22,14 @@ Download and Install apk from [release](https://github.com/Tsuzat/nft-museum/rel
 *OR*
 build from source
 First Install [Flutter](https://docs.flutter.dev/get-started/install)
-```bash
+```sh
 $ git clone https://github.com/Tsuzat/nft-museum
 $ cd nft-museum
 $ flutter pub get
-$ flutter build apk –-split-per-abi
+$ flutter build apk --split-per-abi
 ```
 or run the app in available devices
-```bash
+```sh
 $ flutter run
 ```
 
